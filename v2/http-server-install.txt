@@ -1,0 +1,50 @@
+== DEPLOYMENT STEPS ==
+
+1. Deploy config file (keep out of version control after adding real token)
+   sudo install -m 640 -o root -g misp misp-feed.conf /etc/misp-feed.conf
+
+2. Deploy scripts
+   sudo cp simple_http_server.py update-feeds.sh misp-hash-feed.sh misp-ipv4-feed.sh misp-ipv6-feed.sh misp-url-feed.sh /home/misp/
+   sudo chmod +x /home/misp/update-feeds.sh /home/misp/misp-*.sh
+
+3. Create feed directory
+   sudo mkdir -p /home/misp/feed
+   sudo chown misp:misp /home/misp/feed
+
+4. Install systemd service
+   sudo cp http-server.service /etc/systemd/system/http-server.service
+   sudo systemctl daemon-reload
+   sudo systemctl enable http-server
+   sudo systemctl start http-server
+   sudo systemctl status http-server
+
+5. Install cron job (as misp user)
+   sudo -u misp crontab -e
+   # Add this single line:
+   * * * * * /home/misp/update-feeds.sh >> /var/log/misp-feed.log 2>&1
+
+6. Verify
+   curl http://localhost:40000/status
+   curl http://localhost:40000/misp-ipv4.txt
+   curl http://localhost:40000/misp-ipv6.txt
+   curl http://localhost:40000/misp-urls.txt
+   curl http://localhost:40000/misp-hashes.txt
+
+
+== http-server.service ==
+
+[Unit]
+Description=MISP Threat Intel Feed Server
+After=network.target
+
+[Service]
+User=misp
+WorkingDirectory=/home/misp
+ExecStart=/usr/bin/python3 /home/misp/simple_http_server.py
+Restart=on-failure
+RestartSec=5
+StandardOutput=null
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
