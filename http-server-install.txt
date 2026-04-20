@@ -1,0 +1,35 @@
+sudo nano /etc/systemd/system/http-server.service
+
+[Unit]
+Description=Simple HTTP Server (max 5 sessions)
+After=network.target
+
+[Service]
+User=misp
+WorkingDirectory=/home/misp
+ExecStart=/usr/bin/python3 /home/misp/simple_http_server.py
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
+
+
+----------------
+
+# Reload systemd, enable on boot, start now
+sudo systemctl daemon-reload
+sudo systemctl enable http-server
+sudo systemctl start http-server
+
+# Verify
+sudo systemctl status http-server
+
+------------------
+
+cron
+
+echo "* * * * * /home/misp/misp_hash-feed.sh" | crontab -
+echo "* * * * * /home/misp/misp_ip_fedd.sh" | crontab -
+echo "* * * * * /home/misp/misp_url-feed.sh" | crontab -
+
