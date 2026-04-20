@@ -36,7 +36,7 @@ cp "${SCRIPT_DIR}/simple_http_server.py" \
    "${SCRIPT_DIR}/misp-url-feed.sh" \
    "${MISP_HOME}/"
 chown misp:misp "${MISP_HOME}"/*.sh "${MISP_HOME}/simple_http_server.py"
-chmod +x "${MISP_HOME}/update-feeds.sh" "${MISP_HOME}/misp-*.sh"
+chmod +x "${MISP_HOME}/update-feeds.sh" ${MISP_HOME}/misp-*.sh
 
 echo "==> Installing systemd service"
 cat > /etc/systemd/system/${SERVICE_NAME}.service <<EOF
