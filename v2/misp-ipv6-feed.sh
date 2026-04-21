@@ -11,7 +11,7 @@ curl -s \
   -H "Accept: application/json" \
   -H "Content-type: application/json" \
   -X POST \
-  "${MISP_URL}/attributes/restSearch" \
+  "${MISP_URL}" \
   -o "${TMPFILE}"
 
 if [ $? -ne 0 ]; then
